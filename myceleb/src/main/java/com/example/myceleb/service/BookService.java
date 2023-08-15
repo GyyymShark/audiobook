@@ -19,4 +19,18 @@ public class BookService {
     public List<Book> findAll(){
         return bookRepository.findAll();
     }
+
+
+    @Transactional
+    public Book findById(Long id){
+        Book bookById = bookRepository.findBookById(id);
+        return Book.builder()
+                .author(bookById.getAuthor())
+                .contents(bookById.getContents())
+                .id(bookById.getId())
+                .title(bookById.getTitle())
+                .views(bookById.getViews()+1)
+                .build();
+    }
+
 }

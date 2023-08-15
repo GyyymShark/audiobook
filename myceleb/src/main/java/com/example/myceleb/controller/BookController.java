@@ -14,11 +14,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookController {
     private final BookRepository bookRepository;
+    private final BookRepository bookService;
 
-    @GetMapping("/book")
+    @GetMapping("/books")
     public ResponseEntity<List<Book>> getAllBooks(){
         List<Book> books = bookRepository.findAll();
         return new ResponseEntity<>(books, HttpStatus.OK);
+    }
+
+    @GetMapping("/book/{id}")
+    public ResponseEntity<Book> getBookById(@PathVariable Long id){
+        Book bookById = bookRepository.findBookById(id);
+        return new ResponseEntity<>(bookById, HttpStatus.OK);
     }
 
     @PostMapping("/book")
