@@ -1,5 +1,6 @@
 package com.example.myceleb.controller;
 
+import com.example.myceleb.dto.BookDto;
 import com.example.myceleb.entity.Book;
 import com.example.myceleb.repository.BookRepository;
 import com.example.myceleb.service.BookService;
@@ -33,12 +34,12 @@ public class BookController {
     }
 
     @GetMapping("/book")
-    public String getBookByIdAndCount(
+    public BookDto getBookByIdAndCount(
             @RequestParam(name ="id") Long id,
             @RequestParam(name = "count") int count
     ){
-        bookService.findByIdAndCount2(id,count);
-        return "hey";
+        BookDto book = bookService.findByIdAndCount(id, count);
+        return book;
     }
 
     @PostMapping("/book")

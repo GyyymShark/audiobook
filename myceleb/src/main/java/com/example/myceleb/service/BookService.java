@@ -1,5 +1,6 @@
 package com.example.myceleb.service;
 
+import com.example.myceleb.dto.BookDto;
 import com.example.myceleb.entity.Book;
 import com.example.myceleb.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,9 +36,12 @@ public class BookService {
                 .title(bookById.getTitle())
                 .views(bookById.getViews() + 1)
                 .build();
+
         bookRepository.save(book);
+
         return book;
     }
+
 
     @Transactional
     public Book save(Book book){
@@ -46,12 +50,26 @@ public class BookService {
     }
 
 
-    public void findByIdAndCount2(Long id, int count){
+
+
+
+    public BookDto findByIdAndCount(Long id, int count){
         Book bookById = bookRepository.findBookById(id);
-        String[] split = bookById.getContents().split("\\\\n", count+1);
+        String[] split = bookById.getContents().split("\n", count+1);
+
+        BookDto bookDto=new BookDto();
+        String[] contents=new String[count];
+        bookDto.setTitle(bookById.getTitle());
+
         for(int i=0; i<Math.min(count, split.length); i++){
-            System.out.println("split = " + split[i].trim());
+            contents[i]=split[i].trim();
         }
+        bookDto.setContents(contents);
+        return bookDto;
     }
+
+
+
+
 
 }
