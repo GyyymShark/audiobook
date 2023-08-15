@@ -37,6 +37,7 @@ public class BookController {
             @RequestParam(name ="id") Long id,
             @RequestParam(name = "count") int count
     ){
+        bookService.findByIdAndCount2(id,count);
         return "hey";
     }
 
