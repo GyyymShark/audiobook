@@ -70,6 +70,37 @@ public class BookService {
 
 
 
+    public BookDto findByIdAndSizeAndCount(Long id, int size, int index){
+        Book bookById = bookRepository.findBookById(id);
+        String[] split = bookById.getContents().split("\n", size*index+1);
+
+        BookDto bookDto=new BookDto();
+        String[] contents=new String[size];
+        bookDto.setTitle(bookById.getTitle());
+
+        for(int i=0; i<Math.min(size, split.length); i++){
+            contents[i]=split[(index-1)*size+i].trim();
+        }
+        bookDto.setContents(contents);
+        return bookDto;
+    }
+
+
+
+//    public BookDto findByIdAndSizeAndCount(Long id, int size, int count){
+//        Book bookById = bookRepository.findBookById(id);
+//        String[] split = bookById.getContents().split("\n", count+1);
+//
+//        BookDto bookDto=new BookDto();
+//        String[] contents=new String[count];
+//        bookDto.setTitle(bookById.getTitle());
+//
+//        for(int i=0; i<Math.min(count, split.length); i++){
+//            contents[i]=split[i].trim();
+//        }
+//        bookDto.setContents(contents);
+//        return bookDto;
+//    }
 
 
 }

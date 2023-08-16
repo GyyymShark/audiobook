@@ -33,15 +33,22 @@ public class BookController {
         return new ResponseEntity<>(bookById, HttpStatus.OK);
     }
 
-    @GetMapping("/book")
-    public BookDto getBookByIdAndCount(
-            @RequestParam(name ="id") Long id,
-            @RequestParam(name = "count") int count
-    ){
-        BookDto book = bookService.findByIdAndCount(id, count);
-        return book;
-    }
+//    @GetMapping("/book")
+//    public BookDto getBookByIdAndCount(
+//            @RequestParam(name ="id") Long id,
+//            @RequestParam(name = "count") int count
+//    ){
+//        BookDto book = bookService.findByIdAndCount(id, count);
+//        return book;
+//    }
 
+    @GetMapping("/book")
+    public BookDto getBookByIdAndSizeAndIndex(@RequestParam(name="id") Long id,
+                   @RequestParam(name="size") int size,
+                   @RequestParam(name="index") int index){
+        BookDto byIdAndSizeAndCount = bookService.findByIdAndSizeAndCount(id, size, index);
+        return byIdAndSizeAndCount;
+    }
     @PostMapping("/book")
     public ResponseEntity<Book> createBook(@RequestBody Book book){
         bookService.save(book);
