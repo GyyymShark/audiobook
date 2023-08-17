@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookDto {
+    private Long id;
     private String title;
+    private int views;
+    private String author;
     private String[] contents;
 }

@@ -1,6 +1,7 @@
 package com.example.myceleb.service;
 
 import com.example.myceleb.dto.BookDto;
+import com.example.myceleb.dto.BookViewDto;
 import com.example.myceleb.entity.Book;
 import com.example.myceleb.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ public class BookService {
 
     @Transactional
     public Book findById(Long id){
-        Book bookById = bookRepository.findBookById(id);
+        Book bookById = bookRepository.findById(id).get();
 
         Book book = Book.builder()
                 .author(bookById.getAuthor())
@@ -49,12 +50,17 @@ public class BookService {
         return book;
     }
 
+    @Transactional(readOnly = true)
+    public BookViewDto findBookViewsById(Long id){
+        BookViewDto bookViewDto = bookRepository.findBookViewDto(id);
+        return bookViewDto;
+    }
 
 
 
 
     public BookDto findByIdAndCount(Long id, int count){
-        Book bookById = bookRepository.findBookById(id);
+        Book bookById = bookRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("book doesn't exist"));
         String[] split = bookById.getContents().split("\n", count+1);
 
         BookDto bookDto=new BookDto();
@@ -71,8 +77,8 @@ public class BookService {
 
 
     public BookDto findByIdAndSizeAndCount(Long id, int size, int index){
-        Book bookById = bookRepository.findBookById(id);
-        String[] split = bookById.getContents().split("\n", size*index+1);
+        Book bookById = bookRepository.findById(id).get();
+        String[] split = bookById.getContents().split("\\.", size*index+1);
 
         BookDto bookDto=new BookDto();
         String[] contents=new String[size];

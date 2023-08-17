@@ -1,6 +1,7 @@
 package com.example.myceleb.controller;
 
 import com.example.myceleb.dto.BookDto;
+import com.example.myceleb.dto.BookViewDto;
 import com.example.myceleb.entity.Book;
 import com.example.myceleb.repository.BookRepository;
 import com.example.myceleb.service.BookService;
@@ -31,6 +32,13 @@ public class BookController {
     public ResponseEntity<Book> getBookById(@PathVariable Long id){
         Book bookById = bookService.findById(id);
         return new ResponseEntity<>(bookById, HttpStatus.OK);
+    }
+
+
+    @GetMapping("/book/views/{id}")
+    public ResponseEntity<BookViewDto> getBookViewsById(@PathVariable Long id){
+        BookViewDto bookViewsById = bookService.findBookViewsById(id);
+        return new ResponseEntity<>(bookViewsById,HttpStatus.OK);
     }
 
 //    @GetMapping("/book")

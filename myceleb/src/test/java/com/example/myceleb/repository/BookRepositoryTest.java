@@ -53,8 +53,8 @@ class BookRepositoryTest {
         bookRepository.save(testBook1);
         bookRepository.save(testBook2);
 
-        Book bookById1 = bookRepository.findBookById(1L);
-        Book bookById2 = bookRepository.findBookById(2L);
+        Book bookById1 = bookRepository.findById(1L).get();
+        Book bookById2 = bookRepository.findById(2L).get();
 
 
         assertThat(testBook1).isEqualTo(bookById1);
