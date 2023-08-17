@@ -8,10 +8,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book,Long> {
+
+    @Query("select new com.example.myceleb.dto.BookViewDto(b.id, b.views,b.title,b.author) from Book b")
+    List<BookViewDto> findBookListDto();
+
     @Query("select new com.example.myceleb.dto.BookViewDto(:id,b.views,b.title,b.author)"+ "from Book b where b.id = :id")
    BookViewDto findBookViewDto(@Param("id") Long id);
 }

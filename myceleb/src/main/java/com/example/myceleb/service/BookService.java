@@ -21,8 +21,15 @@ public class BookService {
 
 
     @Transactional(readOnly = true)
-    public List<Book> findAll(){
-        return bookRepository.findAll();
+    public List<Book> findAlll(){
+        List<Book> books = bookRepository.findAll();
+        return books;
+    }
+
+    @Transactional(readOnly = true)
+    public List<BookViewDto> findAll(){
+        List<BookViewDto> bookListDto = bookRepository.findBookListDto();
+        return bookListDto;
     }
 
 
@@ -78,7 +85,7 @@ public class BookService {
 
     public BookDto findByIdAndSizeAndCount(Long id, int size, int index){
         Book bookById = bookRepository.findById(id).get();
-        String[] split = bookById.getContents().split("\\.", size*index+1);
+        String[] split = bookById.getContents().split("@", size*index+1);
 
         BookDto bookDto=new BookDto();
         String[] contents=new String[size];
