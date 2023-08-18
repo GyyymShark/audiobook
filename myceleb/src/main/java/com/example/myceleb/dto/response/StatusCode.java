@@ -6,6 +6,13 @@ import org.springframework.http.HttpStatus;
 
 
 public class StatusCode {
+
+    /***** 200 ******/
     public static final int OK=200;
+
+
+    /***** 400 ******/
+    public static final int BAD_REQUEST=400;
+
 
 }

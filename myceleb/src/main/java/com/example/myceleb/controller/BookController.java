@@ -4,6 +4,7 @@ import com.example.myceleb.dto.request.CreateBookRequest;
 import com.example.myceleb.dto.response.BookResponse;
 import com.example.myceleb.dto.response.BookViewResponse;
 import com.example.myceleb.dto.response.DefaultResponse;
+import com.example.myceleb.dto.response.StatusCode;
 import com.example.myceleb.entity.Book;
 import com.example.myceleb.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,12 +44,15 @@ public class BookController {
 
 
     @GetMapping("/book")
-    public BookResponse getBookSentences(@RequestParam(name="id") Long id,
+    public ResponseEntity<DefaultResponse<BookResponse>> getBookSentences(@RequestParam(name="id") Long id,
                                          @RequestParam(name="offset") int offset,
                                          @RequestParam(name="limit") int limit){
 
-        BookResponse bookSentences = bookService.getBookSentences(id, offset, limit);
-        return bookSentences;
+        DefaultResponse<BookResponse> bookSentences = bookService.getBookSentences(id, offset, limit);
+        if(bookSentences.getCode()== StatusCode.BAD_REQUEST){
+            return new ResponseEntity<>(bookSentences,HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(bookSentences,HttpStatus.OK);
     }
     @PostMapping("/book")
     @Operation(summary = "책 생성", description = "책 한권을 생성합니다")

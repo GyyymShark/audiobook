@@ -51,6 +51,7 @@ public class BookService {
                 .author(createBookRequest.getAuthor())
                 .contents(createBookRequest.getContents())
                 .title(createBookRequest.getTitle())
+                .views(0L)
                 .build();
 
         bookRepository.save(book);
@@ -71,27 +72,54 @@ public class BookService {
 
 
    @Transactional(readOnly = true)
-    public BookResponse getBookSentences(Long id, int offset, int limit){
+    public DefaultResponse<BookResponse> getBookSentences(Long id, int offset, int limit){
 
 
        Book book = bookRepository.findById(id).get();
        int lengthLimit=27;
 
        List<String> allSentences=splitString(book.getContents(),lengthLimit);
-
        List<String> sentences=new ArrayList<>();
-       for(int i=offset; i<offset+limit; i++){
-           sentences.add(allSentences.get(i));
+
+       if(offset>= allSentences.size() || offset<0){        //offset이 범위를 벗어났을때
+            return new DefaultResponse<>(StatusCode.BAD_REQUEST,ResponseMessage.OFFSET_ERROR,null);
        }
 
-       BookResponse bookResponse = BookResponse.builder()
-               .author(book.getAuthor())
-               .title(book.getTitle())
-               .author(book.getAuthor())
-               .contents(sentences)
-               .build();
+       if(limit<0){
+           return new DefaultResponse<>(StatusCode.BAD_REQUEST,ResponseMessage.LIMIT_ERROR,null);
+       }
 
-       return bookResponse;
+
+       if(offset+limit>allSentences.size()){    //offset+limit이 문장 전체 수를 초과했을때 마지막문장까지반환
+           for(int i=offset; i<allSentences.size(); i++){
+               sentences.add(allSentences.get(i));
+           }
+           BookResponse bookResponse = BookResponse.builder()
+                   .id(book.getId())
+                   .author(book.getAuthor())
+                   .title(book.getTitle())
+                   .views(book.getViews())
+                   .contents(sentences)
+                   .count(allSentences.size()-offset)
+                   .build();
+           return new DefaultResponse<BookResponse>(StatusCode.OK,ResponseMessage.FIND_BOOK_INCOMPLETE_SUCCESS,bookResponse);
+       }
+
+       else {       //정상동작
+           for (int i = offset; i < offset + limit; i++) {
+               sentences.add(allSentences.get(i));
+           }
+           BookResponse bookResponse = BookResponse.builder()
+                   .id(book.getId())
+                   .author(book.getAuthor())
+                   .title(book.getTitle())
+                   .views(book.getViews())
+                   .contents(sentences)
+                   .count(limit)
+                   .build();
+           return new DefaultResponse<BookResponse>(StatusCode.OK,ResponseMessage.FIND_BOOK_COMPLETE_SUCCESS,bookResponse);
+       }
+
    }
 
 
