@@ -1,16 +1,19 @@
-package com.example.myceleb.dto;
+package com.example.myceleb.dto.response;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookDto {
+@Builder
+public class BookResponse {
     private Long id;
     private String title;
-    private int views;
     private String author;
-    private String[] contents;
+    private List<String> contents;
 }

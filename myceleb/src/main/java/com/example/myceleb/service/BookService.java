@@ -1,17 +1,15 @@
 package com.example.myceleb.service;
 
-import com.example.myceleb.dto.BookDto;
-import com.example.myceleb.dto.BookViewDto;
+import com.example.myceleb.dto.request.CreateBookRequest;
+import com.example.myceleb.dto.response.*;
 import com.example.myceleb.entity.Book;
 import com.example.myceleb.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -21,16 +19,11 @@ public class BookService {
 
 
     @Transactional(readOnly = true)
-    public List<Book> findAlll(){
-        List<Book> books = bookRepository.findAll();
-        return books;
+    public DefaultResponse<List<BookViewResponse>> findAll(){
+        List<BookViewResponse> bookListDto = bookRepository.findBookListDto();
+        return new DefaultResponse<>(StatusCode.OK,ResponseMessage.FIND_BOOKS_SUCCESS,bookListDto);
     }
 
-    @Transactional(readOnly = true)
-    public List<BookViewDto> findAll(){
-        List<BookViewDto> bookListDto = bookRepository.findBookListDto();
-        return bookListDto;
-    }
 
 
     @Transactional
@@ -52,68 +45,135 @@ public class BookService {
 
 
     @Transactional
-    public Book save(Book book){
+    public DefaultResponse<Long> save(CreateBookRequest createBookRequest){
+
+        Book book = Book.builder()
+                .author(createBookRequest.getAuthor())
+                .contents(createBookRequest.getContents())
+                .title(createBookRequest.getTitle())
+                .build();
+
         bookRepository.save(book);
-        return book;
+        Long id = book.getId();
+        return new DefaultResponse<>(StatusCode.OK, ResponseMessage.CREATE_BOOK_SUCCESS,id);
+
     }
 
     @Transactional(readOnly = true)
-    public BookViewDto findBookViewsById(Long id){
-        BookViewDto bookViewDto = bookRepository.findBookViewDto(id);
-        return bookViewDto;
+    public BookViewResponse findBookViewsById(Long id){
+        BookViewResponse bookViewResponse = bookRepository.findBookViewDto(id);
+        return bookViewResponse;
     }
 
 
 
 
-    public BookDto findByIdAndCount(Long id, int count){
-        Book bookById = bookRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("book doesn't exist"));
-        String[] split = bookById.getContents().split("\n", count+1);
 
-        BookDto bookDto=new BookDto();
-        String[] contents=new String[count];
-        bookDto.setTitle(bookById.getTitle());
 
-        for(int i=0; i<Math.min(count, split.length); i++){
-            contents[i]=split[i].trim();
+   @Transactional(readOnly = true)
+    public BookResponse getBookSentences(Long id, int offset, int limit){
+
+
+       Book book = bookRepository.findById(id).get();
+       int lengthLimit=27;
+
+       List<String> allSentences=splitString(book.getContents(),lengthLimit);
+
+       List<String> sentences=new ArrayList<>();
+       for(int i=offset; i<offset+limit; i++){
+           sentences.add(allSentences.get(i));
+       }
+
+       BookResponse bookResponse = BookResponse.builder()
+               .author(book.getAuthor())
+               .title(book.getTitle())
+               .author(book.getAuthor())
+               .contents(sentences)
+               .build();
+
+       return bookResponse;
+   }
+
+
+
+    public static List<String> splitString(String input, int limit){
+        List<String> chunks=new ArrayList<>();
+
+        int startIndex=0;
+        while(startIndex<input.length()){
+            int endIndex = getEndIndex(input, startIndex, limit);
+            chunks.add(input.substring(startIndex, endIndex).trim());
+            startIndex = endIndex;
         }
-        bookDto.setContents(contents);
-        return bookDto;
+        return chunks;
     }
 
+    public static int getEndIndex(String input, int startIndex, int limit){
+        int endIndex=0,dotCount=0,doubleQuoteCount=0;
+        StringBuilder sb=new StringBuilder();
 
+        for(int i=startIndex; i<startIndex+limit; i++){
 
-    public BookDto findByIdAndSizeAndCount(Long id, int size, int index){
-        Book bookById = bookRepository.findById(id).get();
-        String[] split = bookById.getContents().split("@", size*index+1);
+            if(i==input.length()) { return input.length();}
 
-        BookDto bookDto=new BookDto();
-        String[] contents=new String[size];
-        bookDto.setTitle(bookById.getTitle());
+            char cur=input.charAt(i);
+            sb.append(cur);
 
-        for(int i=0; i<Math.min(size, split.length); i++){
-            contents[i]=split[(index-1)*size+i].trim();
+            if(cur=='.'){
+                dotCount++;
+            }
+            else if(cur=='"'){
+                doubleQuoteCount++;
+            }
         }
-        bookDto.setContents(contents);
-        return bookDto;
+
+        if(dotCount==0 && doubleQuoteCount==0){
+            int i = sb.lastIndexOf(" ");
+            endIndex=i;
+        }
+
+        else if(dotCount>0 && doubleQuoteCount==0){
+            int i = sb.lastIndexOf(" ");
+            endIndex=i;
+        }
+
+        else if(dotCount==0 && doubleQuoteCount>0){
+            if(doubleQuoteCount%2==0){
+                int i = sb.lastIndexOf("\"");
+                endIndex=i+1;
+            }
+            else{
+                int i = sb.lastIndexOf(" ");
+                endIndex=i;
+            }
+        }
+
+        else if(dotCount>0 && doubleQuoteCount>0){
+            if(doubleQuoteCount%2==0){
+                int i=sb.lastIndexOf("\"");
+                endIndex=i+1;
+            }
+            else{
+                if(dotCount==1){
+                    int i = sb.lastIndexOf(" ");
+                    endIndex=i+1;
+                }
+                else{
+                    int dotLast=sb.lastIndexOf(".");
+                    int doubleLast=sb.lastIndexOf("\"");
+                    int i=Math.max(dotLast,doubleLast);
+                    endIndex=i+1;
+                }
+
+            }
+
+        }
+
+
+        return startIndex+endIndex;
     }
 
 
-
-//    public BookDto findByIdAndSizeAndCount(Long id, int size, int count){
-//        Book bookById = bookRepository.findBookById(id);
-//        String[] split = bookById.getContents().split("\n", count+1);
-//
-//        BookDto bookDto=new BookDto();
-//        String[] contents=new String[count];
-//        bookDto.setTitle(bookById.getTitle());
-//
-//        for(int i=0; i<Math.min(count, split.length); i++){
-//            contents[i]=split[i].trim();
-//        }
-//        bookDto.setContents(contents);
-//        return bookDto;
-//    }
 
 
 }
