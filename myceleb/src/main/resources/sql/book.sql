@@ -1,10 +1,10 @@
-CREATE TABLE `myceleb`.`book` (
-                                  `book_id` BIGINT NOT NULL,
-                                  `title` VARCHAR(45) NOT NULL,
-                                  `author` VARCHAR(45) NULL,
-                                  `contents` TEXT NULL,
+CREATE TABLE book (
+                                  `id` BIGINT NOT NULL AUTO_INCREMENT,
                                   `views` BIGINT NOT NULL,
-                                  PRIMARY KEY (`book_id`));
+                                  `author` VARCHAR(45) NULL,
+                                  `title` VARCHAR(45) NOT NULL,
+                                  `contents` TEXT NULL,
+                                  PRIMARY KEY (`id`));
 
 
 
