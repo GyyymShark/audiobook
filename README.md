@@ -24,10 +24,10 @@
 ```
 
 ### 문장 분할 알고리즘(1)
-![문장 분할 알고리즘(2)](https://github.com/GyyymShark/audiobook/assets/46774346/7662dc07-48d5-4e4b-a9eb-de42934019f7)
+![문장 분할 알고리즘(1)](https://github.com/GyyymShark/audiobook/assets/46774346/23d2baf5-2e44-44a3-bf12-0162477cdf19)
 
 ### 문장 분할 알고리즘(2)
-![문장 분할 알고리즘(1)](https://github.com/GyyymShark/audiobook/assets/46774346/23d2baf5-2e44-44a3-bf12-0162477cdf19)
+![순서도-문장 분할 알고리즘(2) drawio](https://github.com/GyyymShark/audiobook/assets/46774346/c14ac6eb-2cba-4747-a3ce-f37a6508d077)
 
 
 ### api 순서도
