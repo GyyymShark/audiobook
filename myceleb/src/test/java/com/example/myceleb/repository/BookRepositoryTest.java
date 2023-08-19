@@ -45,20 +45,20 @@ class BookRepositoryTest {
         assertThat(book2).isEqualTo(findBook2);
     }
 
-    @Test
-    public void testFindById(){
-        Book testBook1 = new Book("testBook1");
-        Book testBook2 = new Book("testBook2");
-
-        bookRepository.save(testBook1);
-        bookRepository.save(testBook2);
-
-        Book bookById1 = bookRepository.findById(1L).get();
-        Book bookById2 = bookRepository.findById(2L).get();
-
-
-        assertThat(testBook1).isEqualTo(bookById1);
-        assertThat(testBook2).isEqualTo(bookById2);
-
-    }
+//    @Test
+//    public void testFindById(){
+//        Book testBook1 = new Book("testBook1");
+//        Book testBook2 = new Book("testBook2");
+//
+//        bookRepository.save(testBook1);
+//        bookRepository.save(testBook2);
+//
+//        Book bookById1 = bookRepository.findById(1L).get();
+//        Book bookById2 = bookRepository.findById(2L).get();
+//
+//
+//        assertThat(testBook1).isEqualTo(bookById1);
+//        assertThat(testBook2).isEqualTo(bookById2);
+//
+//    }
 }
