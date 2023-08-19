@@ -27,7 +27,7 @@ public class BookService {
 
 
     @Transactional
-    public Book findById(Long id){
+    public DefaultResponse<BookResponse> findById(Long id){
         Book bookById = bookRepository.findById(id).get();
 
         Book book = Book.builder()
@@ -40,7 +40,8 @@ public class BookService {
 
         bookRepository.save(book);
 
-        return book;
+        DefaultResponse<BookResponse> bookSentences = getBookSentences(book.getId(), 0, 1000);
+        return bookSentences;
     }
 
 

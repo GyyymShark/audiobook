@@ -36,14 +36,18 @@ public class BookController {
 
     @GetMapping("/book/{id}")
     @Operation(summary = "책 선택 및 정보조회", description = "책을 선택하여 조회수가 1증가하고, 책 전체내용을 포함한 정보가 조회됩니다")
-    public ResponseEntity<Book> getBookById(@PathVariable Long id){
-        Book bookById = bookService.findById(id);
-        return new ResponseEntity<>(bookById, HttpStatus.OK);
+    public ResponseEntity<DefaultResponse<BookResponse>> getBookById(@PathVariable Long id){
+        DefaultResponse<BookResponse> byId = bookService.findById(id);
+        if(byId.getCode()== StatusCode.BAD_REQUEST){
+            return new ResponseEntity<>(byId,HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(byId,HttpStatus.OK);
     }
 
 
 
     @GetMapping("/book")
+    @Operation(summary = "책 문장 조회", description = "현재위치 offset, 원하는 문장수 limit으로 문장을 개수에 맞게 반환합니다")
     public ResponseEntity<DefaultResponse<BookResponse>> getBookSentences(@RequestParam(name="id") Long id,
                                          @RequestParam(name="offset") int offset,
                                          @RequestParam(name="limit") int limit){
