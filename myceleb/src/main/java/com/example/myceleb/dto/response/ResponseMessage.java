@@ -7,4 +7,6 @@ public class ResponseMessage {
     public static final String FIND_BOOK_COMPLETE_SUCCESS="문장 조회 성공";
     public static final String OFFSET_ERROR="OFFSET 기입 오류";
     public static final String LIMIT_ERROR="LIMIT 기입 오류";
+    public static final String DB_NONEXSITENCE="DB에 존재하지 않음";
+    public static final String DB_NULL="값이 NULL임";
 }

@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +30,17 @@ public class BookService {
 
     @Transactional
     public DefaultResponse<BookResponse> findById(Long id){
-        Book bookById = bookRepository.findById(id).get();
+        Optional<Book> byId = bookRepository.findById(id);
+
+        if(byId.isEmpty()){
+            return new DefaultResponse<>(StatusCode.BAD_REQUEST,ResponseMessage.DB_NONEXSITENCE,null);
+        }
+
+        Book bookById = byId.get();
+
+        if(bookById.getContents()==null){
+            return new DefaultResponse<>(StatusCode.INTERNAL_SERVER_ERROR,ResponseMessage.DB_NULL,null);
+        }
 
         Book book = Book.builder()
                 .author(bookById.getAuthor())
@@ -40,8 +52,9 @@ public class BookService {
 
         bookRepository.save(book);
 
-        DefaultResponse<BookResponse> bookSentences = getBookSentences(book.getId(), 0, 1000);
-        return bookSentences;
+        //DefaultResponse<BookResponse> bookSentences = getBookSentences(book.getId(), 0, 1000);
+        DefaultResponse<BookResponse> defaultResponse = splitBookSentences(book.getId(), 0, 1000);
+        return defaultResponse;
     }
 
 
@@ -68,11 +81,70 @@ public class BookService {
     }
 
 
+    @Transactional(readOnly = true)
+    public DefaultResponse<BookResponse> splitBookSentences(Long id, int offset, int limit){
+
+        Optional<Book> byId = bookRepository.findById(id);
+
+        if(byId.isEmpty()){
+            return new DefaultResponse<>(StatusCode.BAD_REQUEST,ResponseMessage.DB_NONEXSITENCE,null);
+        }
+        Book book = byId.get();
+
+        if(book.getContents()==null){
+            return new DefaultResponse<>(StatusCode.INTERNAL_SERVER_ERROR,ResponseMessage.DB_NULL,null);
+        }
+
+        String[] split = book.getContents().split("@", 0);
+
+        List<String> allSentences = Arrays.asList(split);
+        List<String> sentences=new ArrayList<>();
+
+        if(offset>= allSentences.size() || offset<0){        //offset이 범위를 벗어났을때
+            return new DefaultResponse<>(StatusCode.BAD_REQUEST,ResponseMessage.OFFSET_ERROR,null);
+        }
+
+        if(limit<0){
+            return new DefaultResponse<>(StatusCode.BAD_REQUEST,ResponseMessage.LIMIT_ERROR,null);
+        }
+
+
+        if(offset+limit>allSentences.size()){    //offset+limit이 문장 전체 수를 초과했을때 마지막문장까지반환
+            for(int i=offset; i<allSentences.size(); i++){
+                sentences.add(allSentences.get(i));
+            }
+            BookResponse bookResponse = BookResponse.builder()
+                    .id(book.getId())
+                    .author(book.getAuthor())
+                    .title(book.getTitle())
+                    .views(book.getViews())
+                    .contents(sentences)
+                    .count(allSentences.size()-offset)
+                    .build();
+            return new DefaultResponse<BookResponse>(StatusCode.OK,ResponseMessage.FIND_BOOK_INCOMPLETE_SUCCESS,bookResponse);
+        }
+
+        else {       //정상동작
+            for (int i = offset; i < offset + limit; i++) {
+                sentences.add(allSentences.get(i));
+            }
+            BookResponse bookResponse = BookResponse.builder()
+                    .id(book.getId())
+                    .author(book.getAuthor())
+                    .title(book.getTitle())
+                    .views(book.getViews())
+                    .contents(sentences)
+                    .count(limit)
+                    .build();
+            return new DefaultResponse<BookResponse>(StatusCode.OK,ResponseMessage.FIND_BOOK_COMPLETE_SUCCESS,bookResponse);
+        }
+
+    }
 
 
 
 
-   @Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public DefaultResponse<BookResponse> getBookSentences(Long id, int offset, int limit){
 
 

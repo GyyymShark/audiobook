@@ -41,6 +41,9 @@ public class BookController {
         if(byId.getCode()== StatusCode.BAD_REQUEST){
             return new ResponseEntity<>(byId,HttpStatus.BAD_REQUEST);
         }
+        else if(byId.getCode()== StatusCode.INTERNAL_SERVER_ERROR){
+            return new ResponseEntity<>(byId,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         return new ResponseEntity<>(byId,HttpStatus.OK);
     }
 
@@ -52,7 +55,8 @@ public class BookController {
                                          @RequestParam(name="offset") int offset,
                                          @RequestParam(name="limit") int limit){
 
-        DefaultResponse<BookResponse> bookSentences = bookService.getBookSentences(id, offset, limit);
+       // DefaultResponse<BookResponse> bookSentences = bookService.getBookSentences(id, offset, limit);
+        DefaultResponse<BookResponse> bookSentences = bookService.splitBookSentences(id, offset, limit);
         if(bookSentences.getCode()== StatusCode.BAD_REQUEST){
             return new ResponseEntity<>(bookSentences,HttpStatus.BAD_REQUEST);
         }
