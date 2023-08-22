@@ -24,6 +24,10 @@ public class BookController {
 
 
 
+    @GetMapping("/book/hi")
+    public String bookhi(){
+        return "book hi~";
+    }
 
     @GetMapping("/books")
     @Operation(summary = "책 전체목록 조회", description = "책 내용을 제외한 정보 전체를 조회합니다")
