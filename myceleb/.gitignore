@@ -20,6 +20,7 @@ bin/
 ### IntelliJ IDEA ###
 application.yml
 deploy.yaml
+appspec.yml
 .idea
 *.iws
 *.iml
