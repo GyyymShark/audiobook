@@ -12,6 +12,10 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    env:
+      working-directory: ./
+      APPLICATION: ${{ secrets.APPLICATION }}
+    
 
     steps:
     - name: checkout # 1
@@ -20,9 +24,29 @@ jobs:
     - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
+        distribution: 'temurin'
         java-version: '17'
 
     - name: Build with Gradle
       uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
       with:
         arguments: build
+
+    - name: create application.yml
+      uses: actions/checkout@v3
+    - run: mkdir -p ./src/main/resources && touch ./src/main/resources/application.yml
+    - run: echo "${{env.APPLICATION}}" > ./src/main/resources/application.yml
+
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+      working-directory: ${{ env.working-directory }}
+
+    - name: Build with Gradle
+      run: ./gradlew build -x test --parallel --no-daemon
+      working-directory: ${{ env.working-directory }}
+
+    - name: run ls build libs
+      run: ls ./build/libs
+    - name: run ls build
+      run: ls ./build
