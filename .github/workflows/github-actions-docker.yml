@@ -42,10 +42,6 @@ jobs:
       run: ./gradlew build -x test --parallel --no-daemon
       working-directory: ${{ env.working-directory }}
 
-    - name: run ls build libs
-      run: ls ./build/libs
-    - name: run ls build
-      run: ls ./build
 
     - name: Docker build
       run : |
