@@ -44,6 +44,7 @@ jobs:
 
 
     - name: Docker build
+      working-directory: ${{ env.working-directory }}
       run : |
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
         docker build -t ${{ secrets.PROJECT_NAME }} .
