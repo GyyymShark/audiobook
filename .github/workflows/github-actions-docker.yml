@@ -65,6 +65,6 @@ jobs:
           docker pull ${{ secrets.DOCKER_HUB_REPO }}:${GITHUB_SHA::7}
           docker tag ${{ secrets.DOCKER_HUB_REPO }}:${GITHUB_SHA::7} ${{ secrets.PROJECT_NAME }}
           docker rm -f ${{ secrets.PROJECT_NAME }}
-          docker run -d --name ${{ secrets.PROJECT_NAME }} -p 80:8080  ${{ secrets.PROJECT_NAME }}:latest
+          docker run -d --name ${{ secrets.PROJECT_NAME }} -p 8080:8080  ${{ secrets.PROJECT_NAME }}:latest
 
       
