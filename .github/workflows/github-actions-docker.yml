@@ -13,7 +13,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      working-directory: ./myceleb
+      working-directory: ./
       APPLICATION: ${{ secrets.APPLICATION }}
     
 
